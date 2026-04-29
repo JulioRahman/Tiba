@@ -1,0 +1,18 @@
+import Foundation
+
+struct PrayerEvent: Codable, Equatable, Identifiable {
+    let prayer: Prayer
+    let date: Date
+
+    nonisolated var id: String {
+        "\(prayer.rawValue)-\(date.timeIntervalSince1970)"
+    }
+}
+
+struct PrayerSchedule: Codable, Equatable {
+    let dateKey: String
+    let coordinate: PrayerCoordinate
+    let calculationMethod: Int?
+    let timezone: String?
+    let events: [PrayerEvent]
+}
