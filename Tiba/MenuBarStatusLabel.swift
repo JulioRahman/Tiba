@@ -1,0 +1,113 @@
+import SwiftUI
+
+struct MenuBarStatusLabel: View {
+    let state: PrayerLoadState
+
+    @AppStorage(TibaDefaults.menuBarIconStyle)
+    private var iconStyleRaw = MenuBarIconStyle.pieCountdown.rawValue
+    @AppStorage(TibaDefaults.customStatusLabel)
+    private var customStatusLabel = "Tiba"
+
+    var body: some View {
+        switch state {
+        case .ready(let snapshot):
+            readyLabel(snapshot)
+        case .locating:
+            Image(systemName: "location")
+        case .loading, .idle:
+            Image(systemName: "clock")
+        case .needsLocation:
+            Image(systemName: "location.slash")
+        case .failed:
+            Image(systemName: "exclamationmark.triangle")
+        }
+    }
+
+    @ViewBuilder
+    private func readyLabel(_ snapshot: PrayerSnapshot) -> some View {
+        let style = MenuBarIconStyle(rawValue: iconStyleRaw) ?? .pieCountdown
+
+        switch style {
+        case .textOnly:
+            Text(customStatusLabel.isEmpty ? "Tiba" : customStatusLabel)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+
+        case .countdown:
+            Text(snapshot.compactCountdownText)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+
+        case .nextTime:
+            Text(snapshot.nextEvent.date, format: .dateTime.hour().minute())
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+
+        case .pie:
+            ProgressArc(progress: snapshot.progress)
+                .frame(width: 17, height: 17)
+
+        case .pieCountdown:
+            HStack(spacing: 4) {
+                ProgressArc(progress: snapshot.progress)
+                    .frame(width: 15, height: 15)
+                Text(snapshot.compactCountdownText)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+            }
+
+        case .pieInitial:
+            ZStack {
+                ProgressArc(progress: snapshot.progress)
+                    .frame(width: 18, height: 18)
+                Text(snapshot.nextEvent.prayer.initial)
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
+            }
+
+        case .bars:
+            PrayerBarsView(activePrayer: snapshot.nextEvent.prayer)
+                .frame(width: 22, height: 17)
+
+        case .barsCountdown:
+            HStack(spacing: 4) {
+                PrayerBarsView(activePrayer: snapshot.nextEvent.prayer)
+                    .frame(width: 22, height: 17)
+                Text(snapshot.compactCountdownText)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+            }
+        }
+    }
+}
+
+private struct ProgressArc: View {
+    let progress: Double
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(.secondary.opacity(0.28), lineWidth: 2)
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(.primary, style: StrokeStyle(lineWidth: 2.3, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+        }
+    }
+}
+
+private struct PrayerBarsView: View {
+    let activePrayer: Prayer
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 2) {
+            ForEach(Array(Prayer.allCases.enumerated()), id: \.element.id) { index, prayer in
+                let isActive = prayer == activePrayer
+                RoundedRectangle(cornerRadius: 1.2, style: .continuous)
+                    .fill(isActive ? Color.primary : Color.secondary.opacity(0.42))
+                    .frame(
+                        width: isActive ? 4 : 2.5,
+                        height: isActive ? 15 : CGFloat(6 + index * 2)
+                    )
+            }
+        }
+    }
+}
