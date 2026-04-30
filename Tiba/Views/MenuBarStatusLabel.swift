@@ -171,3 +171,107 @@ private struct PrayerBarsView: View {
         return 6 + (progress * 8)
     }
 }
+
+// MARK: - Previews
+
+private func previewSnapshot() -> PrayerSnapshot {
+    let now = Date()
+    let calendar = Calendar.current
+    let offsets = [-15, 45, 80, 360, 540, 720, 840]
+    let events = zip(Prayer.allCases, offsets).compactMap { prayer, offset in
+        calendar.date(byAdding: .minute, value: offset, to: now)
+            .map { PrayerEvent(prayer: prayer, date: $0) }
+    }
+    return PrayerSnapshot(
+        now: now,
+        events: events,
+        nextEvent: events[1],
+        previousEvent: events[0]
+    )
+}
+
+private func previewDefaults(style: MenuBarIconStyle, customLabel: String = "") -> UserDefaults {
+    let suite = "MenuBarStatusLabel.Preview.\(style.rawValue).\(customLabel.hashValue)"
+    let defaults = UserDefaults(suiteName: suite) ?? .standard
+    defaults.set(style.rawValue, forKey: TibaDefaults.menuBarIconStyle)
+    defaults.set(customLabel, forKey: TibaDefaults.customStatusLabel)
+    return defaults
+}
+
+private struct PreviewRow<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(title)
+                .font(.system(size: 11, design: .monospaced))
+                .foregroundStyle(.secondary)
+                .frame(width: 140, alignment: .leading)
+            content()
+            Spacer()
+        }
+    }
+}
+
+#Preview("Ready states") {
+    let snapshot = previewSnapshot()
+    return VStack(alignment: .leading, spacing: 10) {
+        ForEach(MenuBarIconStyle.allCases, id: \.rawValue) { style in
+            PreviewRow(title: String(describing: style)) {
+                MenuBarStatusLabel(state: .ready(snapshot), language: .english)
+                    .defaultAppStorage(previewDefaults(style: style))
+            }
+        }
+        Divider()
+        PreviewRow(title: "textOnly + custom") {
+            MenuBarStatusLabel(state: .ready(snapshot), language: .english)
+                .defaultAppStorage(previewDefaults(style: .textOnly, customLabel: "🕌 Tiba"))
+        }
+    }
+    .padding(16)
+    .frame(width: 360)
+}
+
+#Preview("Non-ready states") {
+    VStack(alignment: .leading, spacing: 10) {
+        PreviewRow(title: "idle") {
+            MenuBarStatusLabel(state: .idle, language: .english)
+        }
+        PreviewRow(title: "loading") {
+            MenuBarStatusLabel(state: .loading, language: .english)
+        }
+        PreviewRow(title: "locating") {
+            MenuBarStatusLabel(state: .locating, language: .english)
+        }
+        PreviewRow(title: "needsLocation") {
+            MenuBarStatusLabel(
+                state: .needsLocation(.allowLocationOrEnterCoordinates),
+                language: .english
+            )
+        }
+        PreviewRow(title: "failed") {
+            MenuBarStatusLabel(
+                state: .failed(.locationUnavailable),
+                language: .english
+            )
+        }
+    }
+    .padding(16)
+    .frame(width: 360)
+}
+
+#Preview("Ready – dark") {
+    let snapshot = previewSnapshot()
+    return VStack(alignment: .leading, spacing: 10) {
+        ForEach(MenuBarIconStyle.allCases, id: \.rawValue) { style in
+            PreviewRow(title: String(describing: style)) {
+                MenuBarStatusLabel(state: .ready(snapshot), language: .english)
+                    .defaultAppStorage(previewDefaults(style: style))
+            }
+        }
+    }
+    .padding(16)
+    .frame(width: 360)
+    .preferredColorScheme(.dark)
+}
