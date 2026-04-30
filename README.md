@@ -29,7 +29,7 @@ The menu bar label can be switched between:
 - five-bar prayer indicator
 - five-bar indicator with countdown
 
-The default is `Pie + Countdown`.
+The default is `Arc + Countdown`.
 
 ## Data Source
 

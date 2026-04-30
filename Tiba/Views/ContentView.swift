@@ -13,7 +13,7 @@ struct ContentView: View {
     @AppStorage(TibaDefaults.calculationMethod)
     private var calculationMethod = TibaDefaults.defaultCalculationMethod
     @AppStorage(TibaDefaults.menuBarIconStyle)
-    private var iconStyleRaw = MenuBarIconStyle.pieCountdown.rawValue
+    private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
     @AppStorage(TibaDefaults.customStatusLabel)
     private var customStatusLabel = "Tiba"
 

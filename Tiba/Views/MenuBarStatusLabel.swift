@@ -4,7 +4,7 @@ struct MenuBarStatusLabel: View {
     let state: PrayerLoadState
 
     @AppStorage(TibaDefaults.menuBarIconStyle)
-    private var iconStyleRaw = MenuBarIconStyle.pieCountdown.rawValue
+    private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
     @AppStorage(TibaDefaults.customStatusLabel)
     private var customStatusLabel = "Tiba"
 
@@ -25,7 +25,7 @@ struct MenuBarStatusLabel: View {
 
     @ViewBuilder
     private func readyLabel(_ snapshot: PrayerSnapshot) -> some View {
-        let style = MenuBarIconStyle(rawValue: iconStyleRaw) ?? .pieCountdown
+        let style = MenuBarIconStyle(rawValue: iconStyleRaw) ?? .arcCountdown
 
         switch style {
         case .textOnly:
@@ -42,11 +42,11 @@ struct MenuBarStatusLabel: View {
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .monospacedDigit()
 
-        case .pie:
+        case .arc:
             ProgressArc(progress: snapshot.progress)
                 .frame(width: 17, height: 17)
 
-        case .pieCountdown:
+        case .arcCountdown:
             HStack(spacing: 4) {
                 ProgressArc(progress: snapshot.progress)
                     .frame(width: 15, height: 15)
@@ -55,7 +55,7 @@ struct MenuBarStatusLabel: View {
                     .monospacedDigit()
             }
 
-        case .pieInitial:
+        case .arcInitial:
             ZStack {
                 ProgressArc(progress: snapshot.progress)
                     .frame(width: 18, height: 18)
