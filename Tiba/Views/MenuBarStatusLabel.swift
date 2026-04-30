@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import SwiftUI
 
@@ -57,13 +58,15 @@ struct MenuBarStatusLabel: View {
                 .monospacedDigit()
 
         case .arc:
-            ProgressArc(progress: snapshot.progress)
-                .frame(width: 17, height: 17)
+            MenuBarRasterized(size: CGSize(width: 17, height: 17)) {
+                ProgressArc(progress: snapshot.progress)
+            }
 
         case .arcCountdown:
             HStack(spacing: 4) {
-                ProgressArc(progress: snapshot.progress)
-                    .frame(width: 15, height: 15)
+                MenuBarRasterized(size: CGSize(width: 15, height: 15)) {
+                    ProgressArc(progress: snapshot.progress)
+                }
                 Text(snapshot.compactCountdownText(language: language))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .monospacedDigit()
@@ -71,26 +74,29 @@ struct MenuBarStatusLabel: View {
 
         case .arcInitial:
             ZStack {
-                ProgressArc(progress: snapshot.progress)
-                    .frame(width: 18, height: 18)
+                MenuBarRasterized(size: CGSize(width: 18, height: 18)) {
+                    ProgressArc(progress: snapshot.progress)
+                }
                 Text(snapshot.nextEvent.prayer.initial(language: language))
                     .font(.system(size: 8, weight: .bold, design: .rounded))
             }
 
         case .bars:
-            PrayerBarsView(
-                activePrayer: snapshot.nextEvent.prayer,
-                prayers: snapshot.events.map(\.prayer)
-            )
-            .frame(width: 26, height: 17)
-
-        case .barsCountdown:
-            HStack(spacing: 4) {
+            MenuBarRasterized(size: CGSize(width: 26, height: 17)) {
                 PrayerBarsView(
                     activePrayer: snapshot.nextEvent.prayer,
                     prayers: snapshot.events.map(\.prayer)
                 )
-                .frame(width: 26, height: 17)
+            }
+
+        case .barsCountdown:
+            HStack(spacing: 4) {
+                MenuBarRasterized(size: CGSize(width: 26, height: 17)) {
+                    PrayerBarsView(
+                        activePrayer: snapshot.nextEvent.prayer,
+                        prayers: snapshot.events.map(\.prayer)
+                    )
+                }
                 Text(snapshot.compactCountdownText(language: language))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .monospacedDigit()
@@ -140,6 +146,30 @@ private struct ProgressArc: View {
                 .trim(from: 0, to: progress)
                 .stroke(.primary, style: StrokeStyle(lineWidth: 2.3, lineCap: .round))
                 .rotationEffect(.degrees(-90))
+        }
+    }
+}
+
+private struct MenuBarRasterized<Content: View>: View {
+    let size: CGSize
+    @ViewBuilder let content: () -> Content
+
+    private var renderedImage: NSImage? {
+        let renderer = ImageRenderer(
+            content: content().frame(width: size.width, height: size.height)
+        )
+        renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
+        guard let image = renderer.nsImage else { return nil }
+        image.size = size
+        image.isTemplate = true
+        return image
+    }
+
+    var body: some View {
+        if let image = renderedImage {
+            Image(nsImage: image)
+        } else {
+            content()
         }
     }
 }
