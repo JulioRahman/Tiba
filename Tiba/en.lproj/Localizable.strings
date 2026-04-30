@@ -47,6 +47,9 @@
 "language.english" = "English";
 "language.indonesian" = "Bahasa Indonesia";
 "language.system" = "System";
+"latitudeAdjustment.angleBased" = "Angle Based";
+"latitudeAdjustment.middleOfNight" = "Middle of the Night";
+"latitudeAdjustment.oneSeventh" = "One Seventh";
 "menubarStyle.arc" = "Arc";
 "menubarStyle.arcCountdown" = "Arc + Countdown";
 "menubarStyle.arcInitial" = "Arc + Prayer Letter";
@@ -76,6 +79,7 @@
 "settings.language" = "Language";
 "settings.latitude" = "Latitude";
 "settings.longitude" = "Longitude";
+"settings.latitudeAdjustment" = "High Latitude Rule";
 "settings.manualLocation" = "Set coordinates manually";
 "settings.menuBar" = "Menu Bar";
 "settings.quit" = "Quit";

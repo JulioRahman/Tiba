@@ -12,6 +12,8 @@ struct ContentView: View {
     private var manualLongitude = TibaDefaults.defaultManualLongitude
     @AppStorage(TibaDefaults.calculationMethod)
     private var calculationMethod = TibaDefaults.defaultCalculationMethod
+    @AppStorage(TibaDefaults.latitudeAdjustmentMethod)
+    private var latitudeAdjustmentMethod = TibaDefaults.defaultLatitudeAdjustmentMethod
     @AppStorage(TibaDefaults.asrSchool)
     private var asrSchool = TibaDefaults.defaultAsrSchool
     @AppStorage(TibaDefaults.menuBarIconStyle)
@@ -56,6 +58,7 @@ struct ContentView: View {
                 manualLatitude: $manualLatitude,
                 manualLongitude: $manualLongitude,
                 calculationMethod: $calculationMethod,
+                latitudeAdjustmentMethod: $latitudeAdjustmentMethod,
                 asrSchool: $asrSchool,
                 language: appLanguage
             )
@@ -87,6 +90,9 @@ struct ContentView: View {
             refreshFromSettings()
         }
         .onChange(of: calculationMethod) { _ in
+            refreshFromSettings()
+        }
+        .onChange(of: latitudeAdjustmentMethod) { _ in
             refreshFromSettings()
         }
         .onChange(of: asrSchool) { _ in

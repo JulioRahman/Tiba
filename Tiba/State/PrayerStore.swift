@@ -354,10 +354,12 @@ final class PrayerStore: ObservableObject {
 
     private func selectedCalculationSettings() -> PrayerCalculationSettings {
         let methodRawValue = settings.calculationMethod
+        let latitudeAdjustmentMethodRawValue = settings.latitudeAdjustmentMethod
         let asrSchoolRawValue = settings.asrSchool
         let asrSchool = AsrSchoolOption.queryValue(for: asrSchoolRawValue)
         return CalculationMethodOption.calculationSettings(
             for: methodRawValue,
+            latitudeAdjustmentMethod: latitudeAdjustmentMethodRawValue,
             asrSchool: asrSchool
         )
     }

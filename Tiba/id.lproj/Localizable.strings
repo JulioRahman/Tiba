@@ -47,6 +47,9 @@
 "language.english" = "English";
 "language.indonesian" = "Bahasa Indonesia";
 "language.system" = "System";
+"latitudeAdjustment.angleBased" = "Berbasis Sudut";
+"latitudeAdjustment.middleOfNight" = "Tengah Malam";
+"latitudeAdjustment.oneSeventh" = "Sepertujuh Malam";
 "menubarStyle.arc" = "Busur";
 "menubarStyle.arcCountdown" = "Busur + Hitung Mundur";
 "menubarStyle.arcInitial" = "Busur + Huruf Shalat";
@@ -76,6 +79,7 @@
 "settings.language" = "Bahasa";
 "settings.latitude" = "Lintang";
 "settings.longitude" = "Bujur";
+"settings.latitudeAdjustment" = "Aturan Lintang Tinggi";
 "settings.manualLocation" = "Atur koordinat manual";
 "settings.menuBar" = "Menu Bar";
 "settings.quit" = "Keluar";

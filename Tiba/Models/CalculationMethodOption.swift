@@ -14,11 +14,15 @@ struct CalculationMethodOption: Identifiable, Hashable {
         TibaLocalization.string(displayNameKey, language: language)
     }
 
-    nonisolated func calculationSettings(asrSchool: Int) -> PrayerCalculationSettings {
+    nonisolated func calculationSettings(
+        asrSchool: Int,
+        latitudeAdjustmentMethod: Int
+    ) -> PrayerCalculationSettings {
         PrayerCalculationSettings(
             method: method,
             methodSettings: methodSettings,
             shafaq: shafaq,
+            latitudeAdjustmentMethod: latitudeAdjustmentMethod,
             asrSchool: asrSchool
         )
     }
@@ -65,10 +69,16 @@ struct CalculationMethodOption: Identifiable, Hashable {
 
     nonisolated static func calculationSettings(
         for storageValue: Int,
+        latitudeAdjustmentMethod: Int,
         asrSchool: Int
     ) -> PrayerCalculationSettings {
         let option = all.first(where: { $0.storageValue == storageValue }) ?? .automatic
-        return option.calculationSettings(asrSchool: asrSchool)
+        return option.calculationSettings(
+            asrSchool: asrSchool,
+            latitudeAdjustmentMethod: LatitudeAdjustmentMethodOption.queryValue(
+                for: latitudeAdjustmentMethod
+            )
+        )
     }
 
     private nonisolated static var automatic: CalculationMethodOption {
@@ -92,6 +102,29 @@ struct CalculationMethodOption: Identifiable, Hashable {
             methodSettings: nil,
             shafaq: nil
         )
+    }
+}
+
+struct LatitudeAdjustmentMethodOption: Identifiable, Hashable {
+    let storageValue: Int
+    let displayNameKey: String
+
+    nonisolated var id: Int { storageValue }
+    nonisolated var displayName: String { displayName(language: .system) }
+
+    nonisolated func displayName(language: AppLanguage) -> String {
+        TibaLocalization.string(displayNameKey, language: language)
+    }
+
+    nonisolated static let all: [LatitudeAdjustmentMethodOption] = [
+        .init(storageValue: 1, displayNameKey: "latitudeAdjustment.middleOfNight"),
+        .init(storageValue: 2, displayNameKey: "latitudeAdjustment.oneSeventh"),
+        .init(storageValue: 3, displayNameKey: "latitudeAdjustment.angleBased"),
+    ]
+
+    nonisolated static func queryValue(for storageValue: Int) -> Int {
+        all.first(where: { $0.storageValue == storageValue })?.storageValue
+            ?? TibaDefaults.defaultLatitudeAdjustmentMethod
     }
 }
 
@@ -121,6 +154,7 @@ struct PrayerCalculationSettings: Codable, Equatable, Hashable {
     let method: Int?
     let methodSettings: String?
     let shafaq: String?
+    let latitudeAdjustmentMethod: Int
     let asrSchool: Int
 
     nonisolated var cacheKey: String {
@@ -128,6 +162,7 @@ struct PrayerCalculationSettings: Codable, Equatable, Hashable {
             "method-\(method.map(String.init) ?? "auto")",
             "settings-\(methodSettings?.replacingOccurrences(of: ",", with: "-") ?? "default")",
             "shafaq-\(shafaq ?? "default")",
+            "latadj-\(latitudeAdjustmentMethod)",
             "school-\(asrSchool)",
         ]
         .joined(separator: "_")

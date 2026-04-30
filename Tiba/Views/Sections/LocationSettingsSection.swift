@@ -5,6 +5,7 @@ struct LocationSettingsSection: View {
     @Binding var manualLatitude: Double
     @Binding var manualLongitude: Double
     @Binding var calculationMethod: Int
+    @Binding var latitudeAdjustmentMethod: Int
     @Binding var asrSchool: Int
     let language: AppLanguage
 
@@ -37,6 +38,16 @@ struct LocationSettingsSection: View {
                 selection: $calculationMethod
             ) {
                 ForEach(CalculationMethodOption.all) { method in
+                    Text(method.displayName(language: language)).tag(method.storageValue)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Picker(
+                TibaLocalization.string("settings.latitudeAdjustment", language: language),
+                selection: $latitudeAdjustmentMethod
+            ) {
+                ForEach(LatitudeAdjustmentMethodOption.all) { method in
                     Text(method.displayName(language: language)).tag(method.storageValue)
                 }
             }

@@ -103,6 +103,10 @@ struct AladhanClient {
             URLQueryItem(name: "latitude", value: String(coordinate.latitude)),
             URLQueryItem(name: "longitude", value: String(coordinate.longitude)),
             URLQueryItem(name: "iso8601", value: "true"),
+            URLQueryItem(
+                name: "latitudeAdjustmentMethod",
+                value: String(calculationSettings.latitudeAdjustmentMethod)
+            ),
         ]
 
         if let method = calculationSettings.method {

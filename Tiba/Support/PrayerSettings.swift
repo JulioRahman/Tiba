@@ -5,6 +5,7 @@ protocol PrayerSettingsProviding {
     var manualLatitude: Double { get }
     var manualLongitude: Double { get }
     var calculationMethod: Int { get }
+    var latitudeAdjustmentMethod: Int { get }
     var asrSchool: Int { get }
     var showImsak: Bool { get }
 }
@@ -44,6 +45,11 @@ struct UserDefaultsPrayerSettings: PrayerSettingsProviding {
     var calculationMethod: Int {
         userDefaults.object(forKey: TibaDefaults.calculationMethod) as? Int
             ?? TibaDefaults.defaultCalculationMethod
+    }
+
+    var latitudeAdjustmentMethod: Int {
+        userDefaults.object(forKey: TibaDefaults.latitudeAdjustmentMethod) as? Int
+            ?? TibaDefaults.defaultLatitudeAdjustmentMethod
     }
 
     var asrSchool: Int {
