@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 struct MenuBarStatusLabel: View {
@@ -7,20 +8,33 @@ struct MenuBarStatusLabel: View {
     @AppStorage(TibaDefaults.menuBarIconStyle)
     private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
     @AppStorage(TibaDefaults.customStatusLabel)
-    private var customStatusLabel = "Tiba"
+    private var customStatusLabel = ""
 
     var body: some View {
         switch state {
         case .ready(let snapshot):
             readyLabel(snapshot)
         case .locating:
-            Image(systemName: "location")
+            compactStatusLabel(systemImage: "location", text: "…")
         case .loading, .idle:
-            Image(systemName: "clock")
+            HStack(spacing: 4) {
+                ProgressView()
+                    .controlSize(.mini)
+                    .scaleEffect(0.62)
+                    .frame(width: 10, height: 10)
+                Text("…")
+                    .font(statusFont)
+            }
         case .needsLocation:
-            Image(systemName: "location.slash")
+            compactStatusLabel(
+                systemImage: "location.slash",
+                text: TibaLocalization.string("status.setLocation", language: language)
+            )
         case .failed:
-            Image(systemName: "exclamationmark.triangle")
+            compactStatusLabel(
+                systemImage: "exclamationmark.triangle",
+                text: TibaLocalization.string("status.error", language: language)
+            )
         }
     }
 
@@ -30,8 +44,7 @@ struct MenuBarStatusLabel: View {
 
         switch style {
         case .textOnly:
-            Text(customStatusLabel.isEmpty ? "Tiba" : customStatusLabel)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
+            textOnlyLabel(snapshot)
 
         case .countdown:
             Text(snapshot.compactCountdownText(language: language))
@@ -83,6 +96,36 @@ struct MenuBarStatusLabel: View {
                     .monospacedDigit()
             }
         }
+    }
+
+    @ViewBuilder
+    private func textOnlyLabel(_ snapshot: PrayerSnapshot) -> some View {
+        let trimmedLabel = customStatusLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if trimmedLabel.isEmpty {
+            HStack(spacing: 3) {
+                Text(snapshot.nextEvent.prayer.displayName(language: language))
+                Text(snapshot.nextEvent.date, format: .dateTime.hour().minute())
+                    .monospacedDigit()
+            }
+            .font(.system(size: 12, weight: .semibold, design: .rounded))
+        } else {
+            Text(trimmedLabel)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+        }
+    }
+
+    private func compactStatusLabel(systemImage: String, text: String) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: systemImage)
+                .imageScale(.small)
+            Text(text)
+                .font(statusFont)
+        }
+    }
+
+    private var statusFont: Font {
+        .system(size: 12, weight: .semibold, design: .rounded)
     }
 }
 

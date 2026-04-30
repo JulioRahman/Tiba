@@ -17,7 +17,7 @@ struct ContentView: View {
     @AppStorage(TibaDefaults.menuBarIconStyle)
     private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
     @AppStorage(TibaDefaults.customStatusLabel)
-    private var customStatusLabel = "Tiba"
+    private var customStatusLabel = ""
     @AppStorage(TibaDefaults.appLanguage)
     private var appLanguageRaw = AppLanguage.system.rawValue
     @AppStorage(TibaDefaults.showImsak)
