@@ -16,6 +16,7 @@ final class PrayerStore: ObservableObject {
     private var timer: Timer?
     private var didStart = false
     private var isLoadingTomorrow = false
+    private var refreshTask: Task<Void, Never>?
 
     init(
         locationProvider: LocationProvider = LocationProvider(),
@@ -39,7 +40,7 @@ final class PrayerStore: ObservableObject {
             .removeDuplicates()
             .sink { [weak self] _ in
                 Task { @MainActor in
-                    await self?.refresh()
+                    self?.refresh()
                 }
             }
             .store(in: &cancellables)
@@ -84,9 +85,7 @@ final class PrayerStore: ObservableObject {
             }
         }
 
-        Task { @MainActor in
-            await refresh()
-        }
+        refresh()
     }
 
     func requestLocation() {
@@ -94,7 +93,28 @@ final class PrayerStore: ObservableObject {
         locationProvider.requestCurrentLocation()
     }
 
-    func refresh(force: Bool = false) async {
+    func refresh(force: Bool = false, debounce: TimeInterval = 0) {
+        refreshTask?.cancel()
+
+        let delay = max(0, debounce)
+        refreshTask = Task { [weak self] in
+            if delay > 0 {
+                do {
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                } catch {
+                    return
+                }
+            }
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            await self?.performRefresh(force: force)
+        }
+    }
+
+    private func performRefresh(force: Bool = false) async {
         guard let coordinate = selectedCoordinate else {
             updateLocationStateIfNeeded()
             return
@@ -112,21 +132,30 @@ final class PrayerStore: ObservableObject {
         let method = selectedCalculationMethod()
 
         do {
-            todaysSchedule = try await loadSchedule(
+            let loadedToday = try await loadSchedule(
                 for: Date(),
                 coordinate: coordinate,
                 calculationMethod: method,
                 force: force
             )
+            try Task.checkCancellation()
 
-            tomorrowSchedule = try? await loadCachedSchedule(
+            let loadedTomorrow = try? await loadCachedSchedule(
                 for: Date().addingDays(1),
                 coordinate: coordinate,
                 calculationMethod: method
             )
+            try Task.checkCancellation()
 
+            todaysSchedule = loadedToday
+            tomorrowSchedule = loadedTomorrow
             await recompute(now: Date())
+        } catch is CancellationError {
+            return
         } catch {
+            guard !Task.isCancelled else {
+                return
+            }
             state = .failed(error.localizedDescription)
         }
     }
@@ -135,7 +164,7 @@ final class PrayerStore: ObservableObject {
         let now = Date()
 
         if todaysSchedule?.dateKey != now.prayerDayKey() {
-            await refresh()
+            refresh()
             return
         }
 
@@ -177,6 +206,10 @@ final class PrayerStore: ObservableObject {
     }
 
     private func loadTomorrowIfNeeded() async {
+        guard !Task.isCancelled else {
+            return
+        }
+
         guard !isLoadingTomorrow else {
             return
         }
@@ -194,14 +227,22 @@ final class PrayerStore: ObservableObject {
         defer { isLoadingTomorrow = false }
 
         do {
-            tomorrowSchedule = try await loadSchedule(
+            let schedule = try await loadSchedule(
                 for: Date().addingDays(1),
                 coordinate: coordinate,
                 calculationMethod: selectedCalculationMethod(),
                 force: false
             )
+            try Task.checkCancellation()
+
+            tomorrowSchedule = schedule
             await recompute(now: Date())
+        } catch is CancellationError {
+            return
         } catch {
+            guard !Task.isCancelled else {
+                return
+            }
             state = .failed(error.localizedDescription)
         }
     }
@@ -219,6 +260,7 @@ final class PrayerStore: ObservableObject {
                 calculationMethod: calculationMethod
             )
         {
+            try Task.checkCancellation()
             return cached
         }
 
@@ -227,6 +269,8 @@ final class PrayerStore: ObservableObject {
             coordinate: coordinate,
             calculationMethod: calculationMethod
         )
+        try Task.checkCancellation()
+
         try cache.save(schedule)
         return schedule
     }

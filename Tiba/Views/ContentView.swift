@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var store: PrayerStore
+    private let settingsRefreshDebounce = 0.3
 
     @AppStorage(TibaDefaults.useManualLocation)
     private var useManualLocation = false
@@ -47,9 +48,7 @@ struct ContentView: View {
                     store.requestLocation()
                 },
                 onRefresh: {
-                    Task {
-                        await store.refresh()
-                    }
+                    store.refresh()
                 }
             )
         }
@@ -72,9 +71,7 @@ struct ContentView: View {
     }
 
     private func refreshFromSettings() {
-        Task {
-            await store.refresh(force: true)
-        }
+        store.refresh(force: true, debounce: settingsRefreshDebounce)
     }
 }
 
