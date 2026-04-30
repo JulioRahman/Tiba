@@ -13,6 +13,7 @@ final class PrayerStore: ObservableObject {
     private let cache: PrayerScheduleCache
     private var settings: any PrayerSettingsProviding
     private var cancellables: Set<AnyCancellable> = []
+    private var yesterdaysSchedule: PrayerSchedule?
     private var todaysSchedule: PrayerSchedule?
     private var tomorrowSchedule: PrayerSchedule?
     private var timer: Timer?
@@ -182,24 +183,34 @@ final class PrayerStore: ObservableObject {
         let calculationSettings = selectedCalculationSettings()
 
         do {
+            let now = Date()
             let loadedToday = try await loadSchedule(
-                for: Date(),
+                for: now,
                 coordinate: coordinate,
                 calculationSettings: calculationSettings,
                 force: force
             )
             try Task.checkCancellation()
 
-            let loadedTomorrow = try? await loadCachedSchedule(
-                for: Date().addingDays(1),
+            let loadedYesterday = await loadYesterdayScheduleIfNeeded(
+                now: now,
+                todaysSchedule: loadedToday,
                 coordinate: coordinate,
                 calculationSettings: calculationSettings
             )
             try Task.checkCancellation()
 
+            let loadedTomorrow = try? await loadCachedSchedule(
+                for: now.addingDays(1),
+                coordinate: coordinate,
+                calculationSettings: calculationSettings
+            )
+            try Task.checkCancellation()
+
+            yesterdaysSchedule = loadedYesterday
             todaysSchedule = loadedToday
             tomorrowSchedule = loadedTomorrow
-            await recompute(now: Date())
+            await recompute(now: now)
         } catch is CancellationError {
             return
         } catch {
@@ -227,7 +238,8 @@ final class PrayerStore: ObservableObject {
             return
         }
 
-        var allEvents = activeEvents(from: todaysSchedule)
+        var allEvents = yesterdaysSchedule.map { activeEvents(from: $0) } ?? []
+        allEvents.append(contentsOf: activeEvents(from: todaysSchedule))
         let activeTomorrowEvents = tomorrowSchedule.map { activeEvents(from: $0) }
         if let tomorrowSchedule {
             allEvents.append(contentsOf: activeEvents(from: tomorrowSchedule))
@@ -268,6 +280,25 @@ final class PrayerStore: ObservableObject {
                 }
             }
             .sorted { $0.date < $1.date }
+    }
+
+    private func loadYesterdayScheduleIfNeeded(
+        now: Date,
+        todaysSchedule: PrayerSchedule,
+        coordinate: PrayerCoordinate,
+        calculationSettings: PrayerCalculationSettings
+    ) async -> PrayerSchedule? {
+        let todaysEvents = activeEvents(from: todaysSchedule)
+        guard !todaysEvents.contains(where: { $0.date <= now }) else {
+            return nil
+        }
+
+        return try? await loadSchedule(
+            for: now.addingDays(-1),
+            coordinate: coordinate,
+            calculationSettings: calculationSettings,
+            force: false
+        )
     }
 
     private func loadTomorrowIfNeeded() async {
