@@ -11,6 +11,7 @@ final class PrayerStore: ObservableObject {
 
     private let client: AladhanClient
     private let cache: PrayerScheduleCache
+    private var settings: any PrayerSettingsProviding
     private var cancellables: Set<AnyCancellable> = []
     private var todaysSchedule: PrayerSchedule?
     private var tomorrowSchedule: PrayerSchedule?
@@ -22,11 +23,13 @@ final class PrayerStore: ObservableObject {
     init(
         locationProvider: LocationProvider = LocationProvider(),
         client: AladhanClient = AladhanClient(),
-        cache: PrayerScheduleCache = PrayerScheduleCache()
+        cache: PrayerScheduleCache = PrayerScheduleCache(),
+        settings: any PrayerSettingsProviding = PrayerSettings.live
     ) {
         self.locationProvider = locationProvider
         self.client = client
         self.cache = cache
+        self.settings = settings
 
         locationProvider.objectWillChange
             .sink { [weak self] _ in
@@ -130,7 +133,7 @@ final class PrayerStore: ObservableObject {
     }
 
     func requestLocation() {
-        UserDefaults.standard.set(false, forKey: TibaDefaults.useManualLocation)
+        settings.useManualLocation = false
         locationProvider.requestCurrentLocation()
     }
 
@@ -254,11 +257,12 @@ final class PrayerStore: ObservableObject {
     }
 
     private func activeEvents(from schedule: PrayerSchedule) -> [PrayerEvent] {
-        schedule.events
+        let showImsak = settings.showImsak
+        return schedule.events
             .filter { event in
                 switch event.prayer {
                 case .imsak:
-                    UserDefaults.standard.bool(forKey: TibaDefaults.showImsak)
+                    showImsak
                 default:
                     true
                 }
@@ -349,12 +353,8 @@ final class PrayerStore: ObservableObject {
     }
 
     private func selectedCalculationSettings() -> PrayerCalculationSettings {
-        let methodRawValue =
-            UserDefaults.standard.object(forKey: TibaDefaults.calculationMethod) as? Int
-            ?? TibaDefaults.defaultCalculationMethod
-        let asrSchoolRawValue =
-            UserDefaults.standard.object(forKey: TibaDefaults.asrSchool) as? Int
-            ?? TibaDefaults.defaultAsrSchool
+        let methodRawValue = settings.calculationMethod
+        let asrSchoolRawValue = settings.asrSchool
         let asrSchool = AsrSchoolOption.queryValue(for: asrSchoolRawValue)
         return CalculationMethodOption.calculationSettings(
             for: methodRawValue,
@@ -363,14 +363,10 @@ final class PrayerStore: ObservableObject {
     }
 
     private var selectedCoordinate: PrayerCoordinate? {
-        if UserDefaults.standard.bool(forKey: TibaDefaults.useManualLocation) {
+        if settings.useManualLocation {
             return PrayerCoordinate(
-                latitude: UserDefaults.standard.object(forKey: TibaDefaults.manualLatitude)
-                    as? Double
-                    ?? TibaDefaults.defaultManualLatitude,
-                longitude: UserDefaults.standard.object(forKey: TibaDefaults.manualLongitude)
-                    as? Double
-                    ?? TibaDefaults.defaultManualLongitude
+                latitude: settings.manualLatitude,
+                longitude: settings.manualLongitude
             )
         }
 
@@ -382,7 +378,7 @@ final class PrayerStore: ObservableObject {
             return
         }
 
-        if UserDefaults.standard.bool(forKey: TibaDefaults.useManualLocation) {
+        if settings.useManualLocation {
             state = .needsLocation(.invalidManualLocation)
             return
         }
