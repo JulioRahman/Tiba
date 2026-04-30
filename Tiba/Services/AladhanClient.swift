@@ -182,14 +182,18 @@ private struct AladhanTimingsResponse: Decodable {
     }
 
     struct Timings: Decodable {
+        let imsak: String?
         let fajr: String?
+        let sunrise: String?
         let dhuhr: String?
         let asr: String?
         let maghrib: String?
         let isha: String?
 
         enum CodingKeys: String, CodingKey {
+            case imsak = "Imsak"
             case fajr = "Fajr"
+            case sunrise = "Sunrise"
             case dhuhr = "Dhuhr"
             case asr = "Asr"
             case maghrib = "Maghrib"
@@ -198,7 +202,9 @@ private struct AladhanTimingsResponse: Decodable {
 
         func value(for prayer: Prayer) -> String? {
             switch prayer {
+            case .imsak: imsak
             case .fajr: fajr
+            case .sunrise: sunrise
             case .dhuhr: dhuhr
             case .asr: asr
             case .maghrib: maghrib

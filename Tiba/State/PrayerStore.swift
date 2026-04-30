@@ -155,6 +155,12 @@ final class PrayerStore: ObservableObject {
         }
     }
 
+    func timelineVisibilityChanged() {
+        Task {
+            await recompute(now: Date())
+        }
+    }
+
     private func performRefresh(force: Bool = false) async {
         guard let coordinate = selectedCoordinate else {
             updateLocationStateIfNeeded()
@@ -218,9 +224,10 @@ final class PrayerStore: ObservableObject {
             return
         }
 
-        var allEvents = todaysSchedule.events
+        var allEvents = activeEvents(from: todaysSchedule)
+        let activeTomorrowEvents = tomorrowSchedule.map { activeEvents(from: $0) }
         if let tomorrowSchedule {
-            allEvents.append(contentsOf: tomorrowSchedule.events)
+            allEvents.append(contentsOf: activeEvents(from: tomorrowSchedule))
         }
 
         allEvents.sort { $0.date < $1.date }
@@ -230,7 +237,7 @@ final class PrayerStore: ObservableObject {
             return
         }
 
-        let visibleEvents = todaysSchedule.events.sorted { $0.date < $1.date }
+        let visibleEvents = activeEvents(from: todaysSchedule)
         let previousEvent = allEvents.last(where: { $0.date <= now })
         state = .ready(
             PrayerSnapshot(
@@ -241,9 +248,22 @@ final class PrayerStore: ObservableObject {
             )
         )
 
-        if nextEvent.date == tomorrowSchedule?.events.first?.date {
+        if nextEvent.date == activeTomorrowEvents?.first?.date {
             await loadTomorrowIfNeeded()
         }
+    }
+
+    private func activeEvents(from schedule: PrayerSchedule) -> [PrayerEvent] {
+        schedule.events
+            .filter { event in
+                switch event.prayer {
+                case .imsak:
+                    UserDefaults.standard.bool(forKey: TibaDefaults.showImsak)
+                default:
+                    true
+                }
+            }
+            .sorted { $0.date < $1.date }
     }
 
     private func loadTomorrowIfNeeded() async {
@@ -398,11 +418,12 @@ extension PrayerStore {
         let store = PrayerStore()
         let now = Date()
         let calendar = Calendar.current
-        let events = zip(Prayer.allCases, [0, 180, 330, 470, 610]).compactMap { prayer, offset in
-            calendar.date(byAdding: .minute, value: offset, to: now).map {
-                PrayerEvent(prayer: prayer, date: $0)
+        let events =
+            zip(Prayer.allCases, [0, 45, 80, 360, 540, 720, 840]).compactMap { prayer, offset in
+                calendar.date(byAdding: .minute, value: offset, to: now).map {
+                    PrayerEvent(prayer: prayer, date: $0)
+                }
             }
-        }
 
         store.state = .ready(
             PrayerSnapshot(

@@ -61,10 +61,14 @@
 "prayer.dhuhr.initial" = "D";
 "prayer.fajr" = "Subuh";
 "prayer.fajr.initial" = "S";
+"prayer.imsak" = "Imsak";
+"prayer.imsak.initial" = "Im";
 "prayer.isha" = "Isya";
 "prayer.isha.initial" = "I";
 "prayer.maghrib" = "Maghrib";
 "prayer.maghrib.initial" = "M";
+"prayer.sunrise" = "Terbit";
+"prayer.sunrise.initial" = "T";
 "settings.calculation" = "Perhitungan";
 "settings.asrSchool" = "Mazhab Ashar";
 "settings.detect" = "Deteksi";
@@ -76,5 +80,6 @@
 "settings.menuBar" = "Menu Bar";
 "settings.quit" = "Keluar";
 "settings.refresh" = "Segarkan";
+"settings.showImsak" = "Tampilkan Imsak";
 "status.detectingLocation" = "Mendeteksi lokasi";
 "status.loadingPrayerTimes" = "Memuat waktu shalat";

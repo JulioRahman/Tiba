@@ -7,6 +7,7 @@ enum TibaDefaults {
     static let menuBarIconStyle = "menuBarIconStyle"
     static let customStatusLabel = "customStatusLabel"
     static let appLanguage = "appLanguage"
+    static let showImsak = "showImsak"
 
     static let defaultManualLatitude = -6.2088
     static let defaultManualLongitude = 106.8456

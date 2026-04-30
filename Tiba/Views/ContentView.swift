@@ -20,6 +20,8 @@ struct ContentView: View {
     private var customStatusLabel = "Tiba"
     @AppStorage(TibaDefaults.appLanguage)
     private var appLanguageRaw = AppLanguage.system.rawValue
+    @AppStorage(TibaDefaults.showImsak)
+    private var showImsak = false
 
     var body: some View {
         let appLanguage = AppLanguage.value(for: appLanguageRaw)
@@ -29,7 +31,11 @@ struct ContentView: View {
 
             Divider()
 
-            ScheduleSectionView(state: store.state, language: appLanguage)
+            ScheduleSectionView(
+                state: store.state,
+                showImsak: $showImsak,
+                language: appLanguage
+            )
 
             Divider()
 
@@ -85,6 +91,9 @@ struct ContentView: View {
         }
         .onChange(of: asrSchool) { _ in
             refreshFromSettings()
+        }
+        .onChange(of: showImsak) { _ in
+            store.timelineVisibilityChanged()
         }
     }
 

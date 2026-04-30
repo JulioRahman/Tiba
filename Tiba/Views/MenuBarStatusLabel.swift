@@ -65,13 +65,19 @@ struct MenuBarStatusLabel: View {
             }
 
         case .bars:
-            PrayerBarsView(activePrayer: snapshot.nextEvent.prayer)
-                .frame(width: 22, height: 17)
+            PrayerBarsView(
+                activePrayer: snapshot.nextEvent.prayer,
+                prayers: snapshot.events.map(\.prayer)
+            )
+            .frame(width: 26, height: 17)
 
         case .barsCountdown:
             HStack(spacing: 4) {
-                PrayerBarsView(activePrayer: snapshot.nextEvent.prayer)
-                    .frame(width: 22, height: 17)
+                PrayerBarsView(
+                    activePrayer: snapshot.nextEvent.prayer,
+                    prayers: snapshot.events.map(\.prayer)
+                )
+                .frame(width: 26, height: 17)
                 Text(snapshot.compactCountdownText(language: language))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .monospacedDigit()
@@ -97,18 +103,28 @@ private struct ProgressArc: View {
 
 private struct PrayerBarsView: View {
     let activePrayer: Prayer
+    let prayers: [Prayer]
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 2) {
-            ForEach(Array(Prayer.allCases.enumerated()), id: \.element.id) { index, prayer in
+        HStack(alignment: .bottom, spacing: 1.5) {
+            ForEach(Array(prayers.enumerated()), id: \.element.id) { index, prayer in
                 let isActive = prayer == activePrayer
                 RoundedRectangle(cornerRadius: 1.2, style: .continuous)
                     .fill(isActive ? Color.primary : Color.secondary.opacity(0.42))
                     .frame(
-                        width: isActive ? 4 : 2.5,
-                        height: isActive ? 15 : CGFloat(6 + index * 2)
+                        width: isActive ? 3.5 : 2,
+                        height: isActive ? 15 : inactiveHeight(for: index)
                     )
             }
         }
+    }
+
+    private func inactiveHeight(for index: Int) -> CGFloat {
+        guard prayers.count > 1 else {
+            return 10
+        }
+
+        let progress = CGFloat(index) / CGFloat(prayers.count - 1)
+        return 6 + (progress * 8)
     }
 }

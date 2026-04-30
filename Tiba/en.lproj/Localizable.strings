@@ -61,10 +61,14 @@
 "prayer.dhuhr.initial" = "D";
 "prayer.fajr" = "Fajr";
 "prayer.fajr.initial" = "F";
+"prayer.imsak" = "Imsak";
+"prayer.imsak.initial" = "Im";
 "prayer.isha" = "Isha";
 "prayer.isha.initial" = "I";
 "prayer.maghrib" = "Maghrib";
 "prayer.maghrib.initial" = "M";
+"prayer.sunrise" = "Sunrise";
+"prayer.sunrise.initial" = "Sr";
 "settings.calculation" = "Calculation";
 "settings.asrSchool" = "Asr School";
 "settings.detect" = "Detect";
@@ -76,5 +80,6 @@
 "settings.menuBar" = "Menu Bar";
 "settings.quit" = "Quit";
 "settings.refresh" = "Refresh";
+"settings.showImsak" = "Show Imsak";
 "status.detectingLocation" = "Detecting location";
 "status.loadingPrayerTimes" = "Loading prayer times";

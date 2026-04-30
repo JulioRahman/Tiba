@@ -29,7 +29,12 @@ struct PrayerScheduleCache {
         }
 
         let data = try Data(contentsOf: url)
-        return try decoder.decode(PrayerSchedule.self, from: data)
+        let schedule = try decoder.decode(PrayerSchedule.self, from: data)
+        guard isComplete(schedule) else {
+            return nil
+        }
+
+        return schedule
     }
 
     func save(_ schedule: PrayerSchedule) throws {
@@ -62,5 +67,10 @@ struct PrayerScheduleCache {
             .urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Tiba", isDirectory: true)
             .appendingPathComponent("PrayerSchedules", isDirectory: true)
+    }
+
+    private func isComplete(_ schedule: PrayerSchedule) -> Bool {
+        let availablePrayers = Set(schedule.events.map(\.prayer))
+        return Prayer.allCases.allSatisfy { availablePrayers.contains($0) }
     }
 }
