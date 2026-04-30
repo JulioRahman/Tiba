@@ -3,8 +3,8 @@ enum PrayerLoadState: Equatable {
     case locating
     case loading
     case ready(PrayerSnapshot)
-    case needsLocation(String)
-    case failed(String)
+    case needsLocation(AppMessage)
+    case failed(AppMessage)
 
     nonisolated var snapshot: PrayerSnapshot? {
         if case .ready(let snapshot) = self {

@@ -5,7 +5,7 @@ import Foundation
 final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published private(set) var coordinate: PrayerCoordinate?
     @Published private(set) var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    @Published private(set) var errorMessage: String?
+    @Published private(set) var errorMessage: AppMessage?
 
     private let manager = CLLocationManager()
 
@@ -19,10 +19,11 @@ final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDeleg
 
     func requestCurrentLocation() {
         guard CLLocationManager.locationServicesEnabled() else {
-            errorMessage = "Location services are disabled"
+            errorMessage = .locationServicesDisabled
             return
         }
 
+        errorMessage = nil
         authorizationStatus = manager.authorizationStatus
 
         let status = manager.authorizationStatus
@@ -33,9 +34,9 @@ final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDeleg
         case .authorized, .authorizedAlways:
             manager.requestLocation()
         case .denied, .restricted:
-            errorMessage = "Location access is not available"
+            errorMessage = .locationAccessNotAvailable
         @unknown default:
-            errorMessage = "Location status is not supported"
+            errorMessage = .locationStatusUnsupported
         }
     }
 
@@ -60,7 +61,7 @@ final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDeleg
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        errorMessage = error.localizedDescription
+        errorMessage = .raw(error.localizedDescription)
     }
 
     private func authorizationAllowsLocation(_ status: CLAuthorizationStatus) -> Bool {

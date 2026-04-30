@@ -53,20 +53,42 @@ final class PrayerStore: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        locationProvider.$errorMessage
+            .compactMap(\.self)
+            .sink { [weak self] message in
+                Task { @MainActor in
+                    self?.state = .needsLocation(message)
+                }
+            }
+            .store(in: &cancellables)
     }
 
-    var accessibilityLabel: String {
+    func accessibilityLabel(language: AppLanguage) -> String {
         switch state {
         case .ready(let snapshot):
-            "Tiba, \(snapshot.nextEvent.prayer.displayName) in \(snapshot.countdownText)"
+            TibaLocalization.string(
+                "accessibility.ready",
+                language: language,
+                snapshot.nextEvent.prayer.displayName(language: language),
+                snapshot.countdownText(language: language)
+            )
         case .locating:
-            "Tiba, detecting location"
+            TibaLocalization.string("accessibility.locating", language: language)
         case .loading:
-            "Tiba, loading prayer times"
+            TibaLocalization.string("accessibility.loading", language: language)
         case .needsLocation(let message):
-            "Tiba, \(message)"
+            TibaLocalization.string(
+                "accessibility.message",
+                language: language,
+                message.localized(language: language)
+            )
         case .failed(let message):
-            "Tiba, \(message)"
+            TibaLocalization.string(
+                "accessibility.message",
+                language: language,
+                message.localized(language: language)
+            )
         case .idle:
             "Tiba"
         }
@@ -140,7 +162,7 @@ final class PrayerStore: ObservableObject {
         }
 
         guard coordinate.isValid else {
-            state = .needsLocation("Invalid location")
+            state = .needsLocation(.invalidLocation)
             return
         }
 
@@ -175,7 +197,7 @@ final class PrayerStore: ObservableObject {
             guard !Task.isCancelled else {
                 return
             }
-            state = .failed(error.localizedDescription)
+            state = .failed(message(for: error))
         }
     }
 
@@ -262,7 +284,7 @@ final class PrayerStore: ObservableObject {
             guard !Task.isCancelled else {
                 return
             }
-            state = .failed(error.localizedDescription)
+            state = .failed(message(for: error))
         }
     }
 
@@ -334,7 +356,12 @@ final class PrayerStore: ObservableObject {
         }
 
         if UserDefaults.standard.bool(forKey: TibaDefaults.useManualLocation) {
-            state = .needsLocation("Invalid manual location")
+            state = .needsLocation(.invalidManualLocation)
+            return
+        }
+
+        if let errorMessage = locationProvider.errorMessage {
+            state = .needsLocation(errorMessage)
             return
         }
 
@@ -344,10 +371,18 @@ final class PrayerStore: ObservableObject {
         case .authorized, .authorizedAlways:
             state = .locating
         case .denied, .restricted:
-            state = .needsLocation("Allow location or enter coordinates")
+            state = .needsLocation(.allowLocationOrEnterCoordinates)
         @unknown default:
-            state = .needsLocation("Location unavailable")
+            state = .needsLocation(.locationUnavailable)
         }
+    }
+
+    private func message(for error: Error) -> AppMessage {
+        if let error = error as? AladhanClientError {
+            return error.message
+        }
+
+        return .raw(error.localizedDescription)
     }
 }
 

@@ -2,18 +2,19 @@ import SwiftUI
 
 struct StatusSectionView: View {
     let state: PrayerLoadState
+    let language: AppLanguage
 
     var body: some View {
         switch state {
         case .ready(let snapshot):
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(snapshot.nextEvent.prayer.displayName)
+                    Text(snapshot.nextEvent.prayer.displayName(language: language))
                         .font(.title2.weight(.semibold))
 
                     Spacer()
 
-                    Text(snapshot.countdownText)
+                    Text(snapshot.countdownText(language: language))
                         .font(.title3.monospacedDigit().weight(.medium))
                 }
 
@@ -23,20 +24,26 @@ struct StatusSectionView: View {
             }
 
         case .locating:
-            Label("Detecting location", systemImage: "location")
-                .font(.headline)
+            Label(
+                TibaLocalization.string("status.detectingLocation", language: language),
+                systemImage: "location"
+            )
+            .font(.headline)
 
         case .loading, .idle:
-            Label("Loading prayer times", systemImage: "clock")
-                .font(.headline)
+            Label(
+                TibaLocalization.string("status.loadingPrayerTimes", language: language),
+                systemImage: "clock"
+            )
+            .font(.headline)
 
         case .needsLocation(let message):
-            Label(message, systemImage: "location.slash")
+            Label(message.localized(language: language), systemImage: "location.slash")
                 .font(.headline)
                 .foregroundStyle(.secondary)
 
         case .failed(let message):
-            Label(message, systemImage: "exclamationmark.triangle")
+            Label(message.localized(language: language), systemImage: "exclamationmark.triangle")
                 .font(.headline)
                 .foregroundStyle(.secondary)
         }

@@ -1,17 +1,22 @@
 struct CalculationMethodOption: Identifiable, Hashable {
     let storageValue: Int
-    let displayName: String
+    let displayNameKey: String
 
     nonisolated var id: Int { storageValue }
     nonisolated var queryValue: Int? { storageValue >= 0 ? storageValue : nil }
+    nonisolated var displayName: String { displayName(language: .system) }
+
+    nonisolated func displayName(language: AppLanguage) -> String {
+        TibaLocalization.string(displayNameKey, language: language)
+    }
 
     nonisolated static let all: [CalculationMethodOption] = [
-        .init(storageValue: -1, displayName: "Automatic"),
-        .init(storageValue: 2, displayName: "ISNA"),
-        .init(storageValue: 3, displayName: "Muslim World League"),
-        .init(storageValue: 4, displayName: "Umm Al-Qura"),
-        .init(storageValue: 11, displayName: "Singapore"),
-        .init(storageValue: 20, displayName: "Kemenag RI"),
+        .init(storageValue: -1, displayNameKey: "calculation.automatic"),
+        .init(storageValue: 2, displayNameKey: "calculation.isna"),
+        .init(storageValue: 3, displayNameKey: "calculation.muslimWorldLeague"),
+        .init(storageValue: 4, displayNameKey: "calculation.ummAlQura"),
+        .init(storageValue: 11, displayNameKey: "calculation.singapore"),
+        .init(storageValue: 20, displayNameKey: "calculation.kemenagRI"),
     ]
 
     nonisolated static func queryValue(for storageValue: Int) -> Int? {

@@ -16,20 +16,29 @@ struct ContentView: View {
     private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
     @AppStorage(TibaDefaults.customStatusLabel)
     private var customStatusLabel = "Tiba"
+    @AppStorage(TibaDefaults.appLanguage)
+    private var appLanguageRaw = AppLanguage.system.rawValue
 
     var body: some View {
+        let appLanguage = AppLanguage.value(for: appLanguageRaw)
+
         VStack(alignment: .leading, spacing: 14) {
-            StatusSectionView(state: store.state)
+            StatusSectionView(state: store.state, language: appLanguage)
 
             Divider()
 
-            ScheduleSectionView(state: store.state)
+            ScheduleSectionView(state: store.state, language: appLanguage)
+
+            Divider()
+
+            LanguageSectionView(appLanguageRaw: $appLanguageRaw)
 
             Divider()
 
             MenuBarStyleSection(
                 iconStyleRaw: $iconStyleRaw,
-                customStatusLabel: $customStatusLabel
+                customStatusLabel: $customStatusLabel,
+                language: appLanguage
             )
 
             Divider()
@@ -38,7 +47,8 @@ struct ContentView: View {
                 useManualLocation: $useManualLocation,
                 manualLatitude: $manualLatitude,
                 manualLongitude: $manualLongitude,
-                calculationMethod: $calculationMethod
+                calculationMethod: $calculationMethod,
+                language: appLanguage
             )
 
             Divider()
@@ -49,10 +59,12 @@ struct ContentView: View {
                 },
                 onRefresh: {
                     store.refresh()
-                }
+                },
+                language: appLanguage
             )
         }
         .padding(16)
+        .environment(\.locale, appLanguage.locale)
         .onAppear {
             store.start()
         }

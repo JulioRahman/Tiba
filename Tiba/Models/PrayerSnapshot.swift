@@ -15,34 +15,47 @@ struct PrayerSnapshot: Equatable {
     }
 
     nonisolated var countdownText: String {
+        countdownText(language: .system)
+    }
+
+    nonisolated func countdownText(language: AppLanguage) -> String {
         if minutesRemaining == 0 {
-            return "Now"
+            return TibaLocalization.string("countdown.now", language: language)
         }
 
         let hours = minutesRemaining / 60
         let minutes = minutesRemaining % 60
+        let hourUnit = TibaLocalization.string("countdown.hour.abbreviation", language: language)
+        let minuteUnit = TibaLocalization.string("countdown.minute.abbreviation", language: language)
 
         if hours == 0 {
-            return "\(minutes)m"
+            return "\(minutes)\(minuteUnit)"
         }
 
         if minutes == 0 {
-            return "\(hours)h"
+            return "\(hours)\(hourUnit)"
         }
 
-        return "\(hours)h \(minutes)m"
+        return "\(hours)\(hourUnit) \(minutes)\(minuteUnit)"
     }
 
     nonisolated var compactCountdownText: String {
+        compactCountdownText(language: .system)
+    }
+
+    nonisolated func compactCountdownText(language: AppLanguage) -> String {
         if minutesRemaining == 0 {
-            return "now"
+            return TibaLocalization.string("countdown.now.compact", language: language)
         }
+
+        let hourUnit = TibaLocalization.string("countdown.hour.abbreviation", language: language)
+        let minuteUnit = TibaLocalization.string("countdown.minute.abbreviation", language: language)
 
         if minutesRemaining >= 60 {
-            return "\(minutesRemaining / 60)h"
+            return "\(minutesRemaining / 60)\(hourUnit)"
         }
 
-        return "\(minutesRemaining)m"
+        return "\(minutesRemaining)\(minuteUnit)"
     }
 
     nonisolated var progress: Double {

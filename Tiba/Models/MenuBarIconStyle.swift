@@ -11,15 +11,27 @@ enum MenuBarIconStyle: Int, CaseIterable, Identifiable {
     nonisolated var id: Int { rawValue }
 
     nonisolated var displayName: String {
+        displayName(language: .system)
+    }
+
+    nonisolated func displayName(language: AppLanguage) -> String {
         switch self {
-        case .textOnly: "Text Only"
-        case .countdown: "Countdown"
-        case .nextTime: "Next Time"
-        case .arc: "Arc"
-        case .arcCountdown: "Arc + Countdown"
-        case .arcInitial: "Arc + Initial"
-        case .bars: "Bars"
-        case .barsCountdown: "Bars + Countdown"
+        case .textOnly:
+            TibaLocalization.string("menubarStyle.textOnly", language: language)
+        case .countdown:
+            TibaLocalization.string("menubarStyle.countdown", language: language)
+        case .nextTime:
+            TibaLocalization.string("menubarStyle.nextTime", language: language)
+        case .arc:
+            TibaLocalization.string("menubarStyle.arc", language: language)
+        case .arcCountdown:
+            TibaLocalization.string("menubarStyle.arcCountdown", language: language)
+        case .arcInitial:
+            TibaLocalization.string("menubarStyle.arcInitial", language: language)
+        case .bars:
+            TibaLocalization.string("menubarStyle.bars", language: language)
+        case .barsCountdown:
+            TibaLocalization.string("menubarStyle.barsCountdown", language: language)
         }
     }
 }

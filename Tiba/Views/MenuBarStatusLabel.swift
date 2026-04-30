@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuBarStatusLabel: View {
     let state: PrayerLoadState
+    let language: AppLanguage
 
     @AppStorage(TibaDefaults.menuBarIconStyle)
     private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
@@ -33,7 +34,7 @@ struct MenuBarStatusLabel: View {
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
 
         case .countdown:
-            Text(snapshot.compactCountdownText)
+            Text(snapshot.compactCountdownText(language: language))
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .monospacedDigit()
 
@@ -50,7 +51,7 @@ struct MenuBarStatusLabel: View {
             HStack(spacing: 4) {
                 ProgressArc(progress: snapshot.progress)
                     .frame(width: 15, height: 15)
-                Text(snapshot.compactCountdownText)
+                Text(snapshot.compactCountdownText(language: language))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .monospacedDigit()
             }
@@ -59,7 +60,7 @@ struct MenuBarStatusLabel: View {
             ZStack {
                 ProgressArc(progress: snapshot.progress)
                     .frame(width: 18, height: 18)
-                Text(snapshot.nextEvent.prayer.initial)
+                Text(snapshot.nextEvent.prayer.initial(language: language))
                     .font(.system(size: 8, weight: .bold, design: .rounded))
             }
 
@@ -71,7 +72,7 @@ struct MenuBarStatusLabel: View {
             HStack(spacing: 4) {
                 PrayerBarsView(activePrayer: snapshot.nextEvent.prayer)
                     .frame(width: 22, height: 17)
-                Text(snapshot.compactCountdownText)
+                Text(snapshot.compactCountdownText(language: language))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .monospacedDigit()
             }

@@ -7,15 +7,19 @@ enum AladhanClientError: LocalizedError {
     case invalidPrayerTime(Prayer, String)
 
     nonisolated var errorDescription: String? {
+        message.localized(language: .system)
+    }
+
+    nonisolated var message: AppMessage {
         switch self {
         case .invalidURL:
-            "Unable to build Aladhan request"
+            .aladhanInvalidURL
         case .badStatusCode(let code):
-            "Aladhan returned HTTP \(code)"
+            .aladhanBadStatusCode(code)
         case .missingPrayerTime(let prayer):
-            "Aladhan did not return \(prayer.displayName)"
+            .aladhanMissingPrayerTime(prayer)
         case .invalidPrayerTime(let prayer, let value):
-            "Could not read \(prayer.displayName) time: \(value)"
+            .aladhanInvalidPrayerTime(prayer, value)
         }
     }
 }

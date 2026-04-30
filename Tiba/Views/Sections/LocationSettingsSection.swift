@@ -5,21 +5,25 @@ struct LocationSettingsSection: View {
     @Binding var manualLatitude: Double
     @Binding var manualLongitude: Double
     @Binding var calculationMethod: Int
+    let language: AppLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Toggle("Manual Location", isOn: $useManualLocation)
+            Toggle(
+                TibaLocalization.string("settings.manualLocation", language: language),
+                isOn: $useManualLocation
+            )
 
             HStack(spacing: 8) {
                 TextField(
-                    "Latitude",
+                    TibaLocalization.string("settings.latitude", language: language),
                     value: $manualLatitude,
                     format: .number.precision(.fractionLength(4))
                 )
                 .textFieldStyle(.roundedBorder)
 
                 TextField(
-                    "Longitude",
+                    TibaLocalization.string("settings.longitude", language: language),
                     value: $manualLongitude,
                     format: .number.precision(.fractionLength(4))
                 )
@@ -27,9 +31,12 @@ struct LocationSettingsSection: View {
             }
             .disabled(!useManualLocation)
 
-            Picker("Calculation", selection: $calculationMethod) {
+            Picker(
+                TibaLocalization.string("settings.calculation", language: language),
+                selection: $calculationMethod
+            ) {
                 ForEach(CalculationMethodOption.all) { method in
-                    Text(method.displayName).tag(method.storageValue)
+                    Text(method.displayName(language: language)).tag(method.storageValue)
                 }
             }
             .pickerStyle(.menu)

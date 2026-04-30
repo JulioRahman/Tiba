@@ -4,19 +4,26 @@ import SwiftUI
 struct MenuFooterView: View {
     let onDetect: () -> Void
     let onRefresh: () -> Void
+    let language: AppLanguage
 
     var body: some View {
         HStack {
             Button {
                 onDetect()
             } label: {
-                Label("Detect", systemImage: "location")
+                Label(
+                    TibaLocalization.string("settings.detect", language: language),
+                    systemImage: "location"
+                )
             }
 
             Button {
                 onRefresh()
             } label: {
-                Label("Refresh", systemImage: "arrow.clockwise")
+                Label(
+                    TibaLocalization.string("settings.refresh", language: language),
+                    systemImage: "arrow.clockwise"
+                )
             }
 
             Spacer()
@@ -24,7 +31,10 @@ struct MenuFooterView: View {
             Button {
                 NSApp.terminate(nil)
             } label: {
-                Label("Quit", systemImage: "power")
+                Label(
+                    TibaLocalization.string("settings.quit", language: language),
+                    systemImage: "power"
+                )
             }
         }
         .controlSize(.small)
