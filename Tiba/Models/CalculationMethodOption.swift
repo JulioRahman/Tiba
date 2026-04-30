@@ -7,14 +7,14 @@ struct CalculationMethodOption: Identifiable, Hashable {
     let methodSettings: String?
     let shafaq: String?
 
-    nonisolated var id: Int { storageValue }
-    nonisolated var displayName: String { displayName(language: .system) }
+    var id: Int { storageValue }
+    var displayName: String { displayName(language: .system) }
 
-    nonisolated func displayName(language: AppLanguage) -> String {
+    func displayName(language: AppLanguage) -> String {
         TibaLocalization.string(displayNameKey, language: language)
     }
 
-    nonisolated func calculationSettings(
+    func calculationSettings(
         asrSchool: Int,
         latitudeAdjustmentMethod: Int
     ) -> PrayerCalculationSettings {
@@ -27,7 +27,7 @@ struct CalculationMethodOption: Identifiable, Hashable {
         )
     }
 
-    nonisolated static let all: [CalculationMethodOption] = [
+    static let all: [CalculationMethodOption] = [
         .automatic,
         .aladhanMethod(20, displayNameKey: "calculation.kemenagRI"),
         .init(
@@ -67,7 +67,7 @@ struct CalculationMethodOption: Identifiable, Hashable {
         .aladhanMethod(23, displayNameKey: "calculation.jordan"),
     ]
 
-    nonisolated static func calculationSettings(
+    static func calculationSettings(
         for storageValue: Int,
         latitudeAdjustmentMethod: Int,
         asrSchool: Int
@@ -81,7 +81,7 @@ struct CalculationMethodOption: Identifiable, Hashable {
         )
     }
 
-    private nonisolated static var automatic: CalculationMethodOption {
+    private static var automatic: CalculationMethodOption {
         .init(
             storageValue: -1,
             displayNameKey: "calculation.automatic",
@@ -91,7 +91,7 @@ struct CalculationMethodOption: Identifiable, Hashable {
         )
     }
 
-    private nonisolated static func aladhanMethod(
+    private static func aladhanMethod(
         _ method: Int,
         displayNameKey: String
     ) -> CalculationMethodOption {
@@ -109,20 +109,20 @@ struct LatitudeAdjustmentMethodOption: Identifiable, Hashable {
     let storageValue: Int
     let displayNameKey: String
 
-    nonisolated var id: Int { storageValue }
-    nonisolated var displayName: String { displayName(language: .system) }
+    var id: Int { storageValue }
+    var displayName: String { displayName(language: .system) }
 
-    nonisolated func displayName(language: AppLanguage) -> String {
+    func displayName(language: AppLanguage) -> String {
         TibaLocalization.string(displayNameKey, language: language)
     }
 
-    nonisolated static let all: [LatitudeAdjustmentMethodOption] = [
+    static let all: [LatitudeAdjustmentMethodOption] = [
         .init(storageValue: 1, displayNameKey: "latitudeAdjustment.middleOfNight"),
         .init(storageValue: 2, displayNameKey: "latitudeAdjustment.oneSeventh"),
         .init(storageValue: 3, displayNameKey: "latitudeAdjustment.angleBased"),
     ]
 
-    nonisolated static func queryValue(for storageValue: Int) -> Int {
+    static func queryValue(for storageValue: Int) -> Int {
         all.first(where: { $0.storageValue == storageValue })?.storageValue
             ?? TibaDefaults.defaultLatitudeAdjustmentMethod
     }
@@ -132,14 +132,14 @@ struct AsrSchoolOption: Identifiable, Hashable {
     let storageValue: Int
     let displayNameKey: String
 
-    nonisolated var id: Int { storageValue }
-    nonisolated var displayName: String { displayName(language: .system) }
+    var id: Int { storageValue }
+    var displayName: String { displayName(language: .system) }
 
-    nonisolated func displayName(language: AppLanguage) -> String {
+    func displayName(language: AppLanguage) -> String {
         TibaLocalization.string(displayNameKey, language: language)
     }
 
-    nonisolated static let all: [AsrSchoolOption] = [
+    static let all: [AsrSchoolOption] = [
         .init(storageValue: 0, displayNameKey: "asr.standard"),
         .init(storageValue: 1, displayNameKey: "asr.hanafi"),
     ]
@@ -157,7 +157,7 @@ struct PrayerCalculationSettings: Codable, Equatable, Hashable {
     let latitudeAdjustmentMethod: Int
     let asrSchool: Int
 
-    nonisolated var cacheKey: String {
+    var cacheKey: String {
         [
             "method-\(method.map(String.init) ?? "auto")",
             "settings-\(methodSettings?.replacingOccurrences(of: ",", with: "-") ?? "default")",

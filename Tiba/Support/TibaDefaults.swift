@@ -1,18 +1,18 @@
 enum TibaDefaults {
-    nonisolated static let useManualLocation = "useManualLocation"
-    nonisolated static let manualLatitude = "manualLatitude"
-    nonisolated static let manualLongitude = "manualLongitude"
-    nonisolated static let calculationMethod = "calculationMethod"
-    nonisolated static let latitudeAdjustmentMethod = "latitudeAdjustmentMethod"
-    nonisolated static let asrSchool = "asrSchool"
-    nonisolated static let menuBarIconStyle = "menuBarIconStyle"
-    nonisolated static let customStatusLabel = "customStatusLabel"
-    nonisolated static let appLanguage = "appLanguage"
-    nonisolated static let showImsak = "showImsak"
+    static let useManualLocation = "useManualLocation"
+    static let manualLatitude = "manualLatitude"
+    static let manualLongitude = "manualLongitude"
+    static let calculationMethod = "calculationMethod"
+    static let latitudeAdjustmentMethod = "latitudeAdjustmentMethod"
+    static let asrSchool = "asrSchool"
+    static let menuBarIconStyle = "menuBarIconStyle"
+    static let customStatusLabel = "customStatusLabel"
+    static let appLanguage = "appLanguage"
+    static let showImsak = "showImsak"
 
-    nonisolated static let defaultManualLatitude = -6.2088
-    nonisolated static let defaultManualLongitude = 106.8456
-    nonisolated static let defaultCalculationMethod = -1
-    nonisolated static let defaultLatitudeAdjustmentMethod = 3
-    nonisolated static let defaultAsrSchool = 0
+    static let defaultManualLatitude = -6.2088
+    static let defaultManualLongitude = 106.8456
+    static let defaultCalculationMethod = -1
+    static let defaultLatitudeAdjustmentMethod = 3
+    static let defaultAsrSchool = 0
 }

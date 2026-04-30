@@ -6,7 +6,7 @@ enum PrayerLoadState: Equatable {
     case needsLocation(AppMessage)
     case failed(AppMessage)
 
-    nonisolated var snapshot: PrayerSnapshot? {
+    var snapshot: PrayerSnapshot? {
         if case .ready(let snapshot) = self {
             return snapshot
         }

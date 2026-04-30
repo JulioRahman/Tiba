@@ -4,7 +4,7 @@ struct PrayerEvent: Codable, Equatable, Identifiable {
     let prayer: Prayer
     let date: Date
 
-    nonisolated var id: String {
+    var id: String {
         "\(prayer.rawValue)-\(date.timeIntervalSince1970)"
     }
 }

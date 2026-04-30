@@ -7,9 +7,9 @@ enum Prayer: String, CaseIterable, Codable, Identifiable {
     case maghrib = "Maghrib"
     case isha = "Isha"
 
-    nonisolated var id: String { rawValue }
+    var id: String { rawValue }
 
-    nonisolated var displayName: String {
+    var displayName: String {
         displayName(language: .system)
     }
 
@@ -32,11 +32,11 @@ enum Prayer: String, CaseIterable, Codable, Identifiable {
         }
     }
 
-    nonisolated var initial: String {
+    var initial: String {
         initial(language: .system)
     }
 
-    nonisolated func initial(language: AppLanguage) -> String {
+    func initial(language: AppLanguage) -> String {
         switch self {
         case .imsak:
             TibaLocalization.string("prayer.imsak.initial", language: language)
@@ -55,7 +55,7 @@ enum Prayer: String, CaseIterable, Codable, Identifiable {
         }
     }
 
-    nonisolated var symbolName: String {
+    var symbolName: String {
         switch self {
         case .imsak: "timer"
         case .fajr: "moon"

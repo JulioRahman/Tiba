@@ -6,19 +6,19 @@ struct PrayerSnapshot: Equatable {
     let nextEvent: PrayerEvent
     let previousEvent: PrayerEvent?
 
-    nonisolated var remaining: TimeInterval {
+    var remaining: TimeInterval {
         max(nextEvent.date.timeIntervalSince(now), 0)
     }
 
-    nonisolated var minutesRemaining: Int {
+    var minutesRemaining: Int {
         max(Int(ceil(remaining / 60)), 0)
     }
 
-    nonisolated var countdownText: String {
+    var countdownText: String {
         countdownText(language: .system)
     }
 
-    nonisolated func countdownText(language: AppLanguage) -> String {
+    func countdownText(language: AppLanguage) -> String {
         if minutesRemaining == 0 {
             return TibaLocalization.string("countdown.now", language: language)
         }
@@ -39,11 +39,11 @@ struct PrayerSnapshot: Equatable {
         return "\(hours)\(hourUnit) \(minutes)\(minuteUnit)"
     }
 
-    nonisolated var compactCountdownText: String {
+    var compactCountdownText: String {
         compactCountdownText(language: .system)
     }
 
-    nonisolated func compactCountdownText(language: AppLanguage) -> String {
+    func compactCountdownText(language: AppLanguage) -> String {
         if minutesRemaining == 0 {
             return TibaLocalization.string("countdown.now.compact", language: language)
         }
@@ -58,7 +58,7 @@ struct PrayerSnapshot: Equatable {
         return "\(minutesRemaining)\(minuteUnit)"
     }
 
-    nonisolated var progress: Double {
+    var progress: Double {
         guard let previousDate = previousEvent?.date else {
             return 0
         }

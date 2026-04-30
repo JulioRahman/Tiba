@@ -6,11 +6,11 @@ enum AladhanClientError: LocalizedError {
     case missingPrayerTime(Prayer)
     case invalidPrayerTime(Prayer, String)
 
-    nonisolated var errorDescription: String? {
+    var errorDescription: String? {
         message.localized(language: .system)
     }
 
-    nonisolated var message: AppMessage {
+    var message: AppMessage {
         switch self {
         case .invalidURL:
             .aladhanInvalidURL

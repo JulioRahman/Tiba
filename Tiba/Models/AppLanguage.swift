@@ -5,7 +5,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     case english = "en"
     case indonesian = "id"
 
-    nonisolated var id: String { rawValue }
+    var id: String { rawValue }
 
     nonisolated var locale: Locale {
         switch self {
@@ -29,7 +29,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    nonisolated func displayName(language: AppLanguage) -> String {
+    func displayName(language: AppLanguage) -> String {
         switch self {
         case .system:
             TibaLocalization.string("language.system", language: language)
@@ -40,7 +40,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    nonisolated static func value(for rawValue: String) -> AppLanguage {
+    static func value(for rawValue: String) -> AppLanguage {
         AppLanguage(rawValue: rawValue) ?? .system
     }
 }

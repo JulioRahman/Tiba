@@ -8,13 +8,13 @@ enum MenuBarIconStyle: Int, CaseIterable, Identifiable {
     case bars
     case barsCountdown
 
-    nonisolated var id: Int { rawValue }
+    var id: Int { rawValue }
 
-    nonisolated var displayName: String {
+    var displayName: String {
         displayName(language: .system)
     }
 
-    nonisolated func displayName(language: AppLanguage) -> String {
+    func displayName(language: AppLanguage) -> String {
         switch self {
         case .textOnly:
             TibaLocalization.string("menubarStyle.textOnly", language: language)

@@ -1,7 +1,7 @@
 import Foundation
 
 extension Date {
-    nonisolated func prayerDayKey(calendar: Calendar = .current) -> String {
+    func prayerDayKey(calendar: Calendar = .current) -> String {
         let components = calendar.dateComponents([.year, .month, .day], from: self)
         return String(
             format: "%04d-%02d-%02d",
@@ -11,7 +11,7 @@ extension Date {
         )
     }
 
-    nonisolated func aladhanPathDate(calendar: Calendar = .current) -> String {
+    func aladhanPathDate(calendar: Calendar = .current) -> String {
         let components = calendar.dateComponents([.year, .month, .day], from: self)
         return String(
             format: "%02d-%02d-%04d",
@@ -21,7 +21,7 @@ extension Date {
         )
     }
 
-    nonisolated func addingDays(_ days: Int, calendar: Calendar = .current) -> Date {
+    func addingDays(_ days: Int, calendar: Calendar = .current) -> Date {
         calendar.date(byAdding: .day, value: days, to: self) ?? self
     }
 }
