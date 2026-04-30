@@ -2,6 +2,7 @@ import Combine
 import CoreLocation
 import Foundation
 
+@MainActor
 final class PrayerStore: ObservableObject {
     @Published private(set) var state: PrayerLoadState = .idle
 
@@ -27,7 +28,9 @@ final class PrayerStore: ObservableObject {
 
         locationProvider.objectWillChange
             .sink { [weak self] _ in
-                self?.objectWillChange.send()
+                Task { @MainActor in
+                    self?.objectWillChange.send()
+                }
             }
             .store(in: &cancellables)
 
@@ -35,7 +38,7 @@ final class PrayerStore: ObservableObject {
             .compactMap(\.self)
             .removeDuplicates()
             .sink { [weak self] _ in
-                Task {
+                Task { @MainActor in
                     await self?.refresh()
                 }
             }
@@ -43,7 +46,9 @@ final class PrayerStore: ObservableObject {
 
         locationProvider.$authorizationStatus
             .sink { [weak self] _ in
-                self?.updateLocationStateIfNeeded()
+                Task { @MainActor in
+                    self?.updateLocationStateIfNeeded()
+                }
             }
             .store(in: &cancellables)
     }
@@ -74,12 +79,12 @@ final class PrayerStore: ObservableObject {
         locationProvider.requestCurrentLocation()
 
         timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
-            Task {
+            Task { @MainActor in
                 await self?.tick()
             }
         }
 
-        Task {
+        Task { @MainActor in
             await refresh()
         }
     }
