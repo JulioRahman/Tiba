@@ -1,3 +1,4 @@
+import AppKit
 import Combine
 import CoreLocation
 import Foundation
@@ -84,6 +85,24 @@ final class PrayerStore: ObservableObject {
                 await self?.tick()
             }
         }
+
+        NSWorkspace.shared.notificationCenter
+            .publisher(for: NSWorkspace.didWakeNotification)
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    await self?.tick()
+                }
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default
+            .publisher(for: Notification.Name.NSSystemTimeZoneDidChange)
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    await self?.tick()
+                }
+            }
+            .store(in: &cancellables)
 
         refresh()
     }
