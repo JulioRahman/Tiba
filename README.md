@@ -67,10 +67,10 @@ Location data is used on-device to request prayer times. Cached prayer schedules
 ## Requirements
 
 - macOS 13 Ventura or later
-- Apple Silicon Mac (arm64 only; Intel Macs are not supported)
+- Apple Silicon or Intel Mac
 - Xcode with SwiftUI, AppKit, and CoreLocation support
 
-The project is intentionally macOS-only and native. There is no iOS, Catalyst, or multiplatform target.
+The project is intentionally macOS-only and native. There is no iOS, Catalyst, or multiplatform target. Release builds are Universal Binaries for both `arm64` and `x86_64`.
 
 ## Development
 
@@ -83,7 +83,7 @@ open Tiba.xcodeproj
 Or build from the command line:
 
 ```bash
-xcodebuild -scheme Tiba -project Tiba.xcodeproj -configuration Debug -destination 'platform=macOS,arch=arm64' build
+xcodebuild -scheme Tiba -project Tiba.xcodeproj -configuration Release -destination 'generic/platform=macOS' build
 ```
 
 ## Project Direction
