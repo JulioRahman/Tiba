@@ -16,12 +16,12 @@ struct PrayerScheduleCache {
     func schedule(
         for date: Date,
         coordinate: PrayerCoordinate,
-        calculationMethod: Int?
+        calculationSettings: PrayerCalculationSettings
     ) throws -> PrayerSchedule? {
         let url = cacheFileURL(
             dateKey: date.prayerDayKey(),
             coordinate: coordinate,
-            calculationMethod: calculationMethod
+            calculationSettings: calculationSettings
         )
 
         guard fileManager.fileExists(atPath: url.path) else {
@@ -39,7 +39,7 @@ struct PrayerScheduleCache {
         let url = cacheFileURL(
             dateKey: schedule.dateKey,
             coordinate: schedule.coordinate,
-            calculationMethod: schedule.calculationMethod
+            calculationSettings: schedule.calculationSettings
         )
 
         let data = try encoder.encode(schedule)
@@ -49,11 +49,12 @@ struct PrayerScheduleCache {
     private func cacheFileURL(
         dateKey: String,
         coordinate: PrayerCoordinate,
-        calculationMethod: Int?
+        calculationSettings: PrayerCalculationSettings
     ) -> URL {
-        let methodKey = calculationMethod.map(String.init) ?? "auto"
         return cacheDirectoryURL()
-            .appendingPathComponent("\(dateKey)_\(coordinate.cacheKey)_\(methodKey).json")
+            .appendingPathComponent(
+                "\(dateKey)_\(coordinate.cacheKey)_\(calculationSettings.cacheKey).json"
+            )
     }
 
     private func cacheDirectoryURL() -> URL {

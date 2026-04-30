@@ -12,6 +12,8 @@ struct ContentView: View {
     private var manualLongitude = TibaDefaults.defaultManualLongitude
     @AppStorage(TibaDefaults.calculationMethod)
     private var calculationMethod = TibaDefaults.defaultCalculationMethod
+    @AppStorage(TibaDefaults.asrSchool)
+    private var asrSchool = TibaDefaults.defaultAsrSchool
     @AppStorage(TibaDefaults.menuBarIconStyle)
     private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
     @AppStorage(TibaDefaults.customStatusLabel)
@@ -48,6 +50,7 @@ struct ContentView: View {
                 manualLatitude: $manualLatitude,
                 manualLongitude: $manualLongitude,
                 calculationMethod: $calculationMethod,
+                asrSchool: $asrSchool,
                 language: appLanguage
             )
 
@@ -78,6 +81,9 @@ struct ContentView: View {
             refreshFromSettings()
         }
         .onChange(of: calculationMethod) { _ in
+            refreshFromSettings()
+        }
+        .onChange(of: asrSchool) { _ in
             refreshFromSettings()
         }
     }

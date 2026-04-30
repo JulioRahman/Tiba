@@ -34,13 +34,13 @@ struct AladhanClient {
     func fetchSchedule(
         for date: Date,
         coordinate: PrayerCoordinate,
-        calculationMethod: Int?
+        calculationSettings: PrayerCalculationSettings
     ) async throws -> PrayerSchedule {
         guard
             let url = requestURL(
                 for: date,
                 coordinate: coordinate,
-                calculationMethod: calculationMethod
+                calculationSettings: calculationSettings
             )
         else {
             throw AladhanClientError.invalidURL
@@ -83,7 +83,7 @@ struct AladhanClient {
         return PrayerSchedule(
             dateKey: date.prayerDayKey(),
             coordinate: coordinate,
-            calculationMethod: calculationMethod,
+            calculationSettings: calculationSettings,
             timezone: timezone,
             events: events
         )
@@ -92,7 +92,7 @@ struct AladhanClient {
     private func requestURL(
         for date: Date,
         coordinate: PrayerCoordinate,
-        calculationMethod: Int?
+        calculationSettings: PrayerCalculationSettings
     ) -> URL? {
         var components = URLComponents()
         components.scheme = "https"
@@ -105,9 +105,21 @@ struct AladhanClient {
             URLQueryItem(name: "iso8601", value: "true"),
         ]
 
-        if let calculationMethod {
-            queryItems.append(URLQueryItem(name: "method", value: String(calculationMethod)))
+        if let method = calculationSettings.method {
+            queryItems.append(URLQueryItem(name: "method", value: String(method)))
         }
+
+        if let methodSettings = calculationSettings.methodSettings {
+            queryItems.append(URLQueryItem(name: "methodSettings", value: methodSettings))
+        }
+
+        if let shafaq = calculationSettings.shafaq {
+            queryItems.append(URLQueryItem(name: "shafaq", value: shafaq))
+        }
+
+        queryItems.append(
+            URLQueryItem(name: "school", value: String(calculationSettings.asrSchool))
+        )
 
         components.queryItems = queryItems
         return components.url

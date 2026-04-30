@@ -170,13 +170,13 @@ final class PrayerStore: ObservableObject {
             state = .loading
         }
 
-        let method = selectedCalculationMethod()
+        let calculationSettings = selectedCalculationSettings()
 
         do {
             let loadedToday = try await loadSchedule(
                 for: Date(),
                 coordinate: coordinate,
-                calculationMethod: method,
+                calculationSettings: calculationSettings,
                 force: force
             )
             try Task.checkCancellation()
@@ -184,7 +184,7 @@ final class PrayerStore: ObservableObject {
             let loadedTomorrow = try? await loadCachedSchedule(
                 for: Date().addingDays(1),
                 coordinate: coordinate,
-                calculationMethod: method
+                calculationSettings: calculationSettings
             )
             try Task.checkCancellation()
 
@@ -271,7 +271,7 @@ final class PrayerStore: ObservableObject {
             let schedule = try await loadSchedule(
                 for: Date().addingDays(1),
                 coordinate: coordinate,
-                calculationMethod: selectedCalculationMethod(),
+                calculationSettings: selectedCalculationSettings(),
                 force: false
             )
             try Task.checkCancellation()
@@ -291,14 +291,14 @@ final class PrayerStore: ObservableObject {
     private func loadSchedule(
         for date: Date,
         coordinate: PrayerCoordinate,
-        calculationMethod: Int?,
+        calculationSettings: PrayerCalculationSettings,
         force: Bool
     ) async throws -> PrayerSchedule {
         if !force,
             let cached = try? await loadCachedSchedule(
                 for: date,
                 coordinate: coordinate,
-                calculationMethod: calculationMethod
+                calculationSettings: calculationSettings
             )
         {
             try Task.checkCancellation()
@@ -308,7 +308,7 @@ final class PrayerStore: ObservableObject {
         let schedule = try await client.fetchSchedule(
             for: date,
             coordinate: coordinate,
-            calculationMethod: calculationMethod
+            calculationSettings: calculationSettings
         )
         try Task.checkCancellation()
 
@@ -319,20 +319,27 @@ final class PrayerStore: ObservableObject {
     private func loadCachedSchedule(
         for date: Date,
         coordinate: PrayerCoordinate,
-        calculationMethod: Int?
+        calculationSettings: PrayerCalculationSettings
     ) async throws -> PrayerSchedule? {
         try cache.schedule(
             for: date,
             coordinate: coordinate,
-            calculationMethod: calculationMethod
+            calculationSettings: calculationSettings
         )
     }
 
-    private func selectedCalculationMethod() -> Int? {
-        let rawValue =
+    private func selectedCalculationSettings() -> PrayerCalculationSettings {
+        let methodRawValue =
             UserDefaults.standard.object(forKey: TibaDefaults.calculationMethod) as? Int
             ?? TibaDefaults.defaultCalculationMethod
-        return CalculationMethodOption.queryValue(for: rawValue)
+        let asrSchoolRawValue =
+            UserDefaults.standard.object(forKey: TibaDefaults.asrSchool) as? Int
+            ?? TibaDefaults.defaultAsrSchool
+        let asrSchool = AsrSchoolOption.queryValue(for: asrSchoolRawValue)
+        return CalculationMethodOption.calculationSettings(
+            for: methodRawValue,
+            asrSchool: asrSchool
+        )
     }
 
     private var selectedCoordinate: PrayerCoordinate? {

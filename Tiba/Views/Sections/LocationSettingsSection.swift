@@ -5,6 +5,7 @@ struct LocationSettingsSection: View {
     @Binding var manualLatitude: Double
     @Binding var manualLongitude: Double
     @Binding var calculationMethod: Int
+    @Binding var asrSchool: Int
     let language: AppLanguage
 
     var body: some View {
@@ -37,6 +38,16 @@ struct LocationSettingsSection: View {
             ) {
                 ForEach(CalculationMethodOption.all) { method in
                     Text(method.displayName(language: language)).tag(method.storageValue)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Picker(
+                TibaLocalization.string("settings.asrSchool", language: language),
+                selection: $asrSchool
+            ) {
+                ForEach(AsrSchoolOption.all) { school in
+                    Text(school.displayName(language: language)).tag(school.storageValue)
                 }
             }
             .pickerStyle(.menu)

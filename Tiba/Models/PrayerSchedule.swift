@@ -12,7 +12,7 @@ struct PrayerEvent: Codable, Equatable, Identifiable {
 struct PrayerSchedule: Codable, Equatable {
     let dateKey: String
     let coordinate: PrayerCoordinate
-    let calculationMethod: Int?
+    let calculationSettings: PrayerCalculationSettings
     let timezone: String?
     let events: [PrayerEvent]
 }
