@@ -22,6 +22,7 @@ struct StatusSectionView: View {
                     .foregroundStyle(.secondary)
                     .font(.callout)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
         case .locating:
             Label(

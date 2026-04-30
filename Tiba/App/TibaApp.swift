@@ -19,7 +19,6 @@ struct TibaApp: App {
             ContentView()
                 .environmentObject(store)
                 .environment(\.locale, appLanguage.locale)
-                .frame(width: 340)
         } label: {
             MenuBarStatusLabel(state: store.state, language: appLanguage)
                 .environment(\.locale, appLanguage.locale)

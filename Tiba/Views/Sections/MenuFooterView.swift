@@ -8,33 +8,38 @@ struct MenuFooterView: View {
 
     var body: some View {
         HStack {
-            Button {
-                onDetect()
-            } label: {
-                Image(systemName: "location")
-            }
-            .help(TibaLocalization.string("settings.detect", language: language))
+            HStack(spacing: 8) {
+                Button {
+                    onDetect()
+                } label: {
+                    Image(systemName: "location")
+                }
+                .help(TibaLocalization.string("settings.detect", language: language))
 
-            Button {
-                onRefresh()
-            } label: {
-                Image(systemName: "arrow.clockwise")
+                Button {
+                    onRefresh()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .help(TibaLocalization.string("settings.refresh", language: language))
             }
-            .help(TibaLocalization.string("settings.refresh", language: language))
 
             Spacer()
 
-            OpenSettingsButton(language: language)
+            HStack(spacing: 8) {
+                OpenSettingsButton(language: language)
 
-            Button {
-                NSApp.terminate(nil)
-            } label: {
-                Label(
-                    TibaLocalization.string("settings.quit", language: language),
-                    systemImage: "power"
-                )
+                Button {
+                    NSApp.terminate(nil)
+                } label: {
+                    Label(
+                        TibaLocalization.string("settings.quit", language: language),
+                        systemImage: "power"
+                    )
+                }
             }
         }
         .controlSize(.small)
+        .frame(maxWidth: .infinity)
     }
 }

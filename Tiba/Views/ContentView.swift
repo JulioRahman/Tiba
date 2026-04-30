@@ -9,7 +9,7 @@ struct ContentView: View {
     var body: some View {
         let appLanguage = AppLanguage.value(for: appLanguageRaw)
 
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             StatusSectionView(state: store.state, language: appLanguage)
 
             Divider()
@@ -28,7 +28,9 @@ struct ContentView: View {
                 language: appLanguage
             )
         }
-        .padding(16)
+        .frame(width: 200, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         .environment(\.locale, appLanguage.locale)
         .onAppear {
             store.start()

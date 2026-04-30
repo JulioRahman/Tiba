@@ -10,21 +10,25 @@ struct ScheduleSectionView: View {
                 ForEach(snapshot.events) { event in
                     let isNextPrayer = event.prayer == snapshot.nextEvent.prayer
 
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: event.prayer.symbolName)
                             .frame(width: 24, alignment: .center)
 
                         Text(event.prayer.displayName(language: language))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .lineLimit(1)
+
+                        Spacer(minLength: 12)
 
                         Text(event.date, format: .dateTime.hour().minute())
                             .monospacedDigit()
-                            .frame(width: 48, alignment: .trailing)
+                            .lineLimit(1)
+                            .frame(minWidth: 48, alignment: .trailing)
                     }
                     .font(isNextPrayer ? .body.weight(.semibold) : .body)
                     .foregroundStyle(isNextPrayer ? .primary : .secondary)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
