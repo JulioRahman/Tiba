@@ -11,22 +11,20 @@ struct MenuFooterView: View {
             Button {
                 onDetect()
             } label: {
-                Label(
-                    TibaLocalization.string("settings.detect", language: language),
-                    systemImage: "location"
-                )
+                Image(systemName: "location")
             }
+            .help(TibaLocalization.string("settings.detect", language: language))
 
             Button {
                 onRefresh()
             } label: {
-                Label(
-                    TibaLocalization.string("settings.refresh", language: language),
-                    systemImage: "arrow.clockwise"
-                )
+                Image(systemName: "arrow.clockwise")
             }
+            .help(TibaLocalization.string("settings.refresh", language: language))
 
             Spacer()
+
+            OpenSettingsButton(language: language)
 
             Button {
                 NSApp.terminate(nil)

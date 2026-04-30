@@ -85,6 +85,10 @@
 "settings.quit" = "Keluar";
 "settings.refresh" = "Segarkan";
 "settings.showImsak" = "Tampilkan Imsak";
+"settings.tab.general" = "Umum";
+"settings.tab.appearance" = "Tampilan";
+"settings.tab.location" = "Lokasi";
+"settings.openSettings" = "Pengaturan…";
 "status.detectingLocation" = "Mendeteksi lokasi";
 "status.error" = "Gagal";
 "status.loadingPrayerTimes" = "Memuat waktu shalat";

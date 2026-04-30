@@ -26,5 +26,10 @@ struct TibaApp: App {
                 .accessibilityLabel(store.accessibilityLabel(language: appLanguage))
         }
         .menuBarExtraStyle(.window)
+
+        Settings {
+            SettingsView()
+                .environmentObject(store)
+        }
     }
 }

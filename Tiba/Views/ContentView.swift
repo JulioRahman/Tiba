@@ -2,28 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var store: PrayerStore
-    private let settingsRefreshDebounce = 0.3
 
-    @AppStorage(TibaDefaults.useManualLocation)
-    private var useManualLocation = false
-    @AppStorage(TibaDefaults.manualLatitude)
-    private var manualLatitude = TibaDefaults.defaultManualLatitude
-    @AppStorage(TibaDefaults.manualLongitude)
-    private var manualLongitude = TibaDefaults.defaultManualLongitude
-    @AppStorage(TibaDefaults.calculationMethod)
-    private var calculationMethod = TibaDefaults.defaultCalculationMethod
-    @AppStorage(TibaDefaults.latitudeAdjustmentMethod)
-    private var latitudeAdjustmentMethod = TibaDefaults.defaultLatitudeAdjustmentMethod
-    @AppStorage(TibaDefaults.asrSchool)
-    private var asrSchool = TibaDefaults.defaultAsrSchool
-    @AppStorage(TibaDefaults.menuBarIconStyle)
-    private var iconStyleRaw = MenuBarIconStyle.arcCountdown.rawValue
-    @AppStorage(TibaDefaults.customStatusLabel)
-    private var customStatusLabel = ""
     @AppStorage(TibaDefaults.appLanguage)
     private var appLanguageRaw = AppLanguage.system.rawValue
-    @AppStorage(TibaDefaults.showImsak)
-    private var showImsak = false
 
     var body: some View {
         let appLanguage = AppLanguage.value(for: appLanguageRaw)
@@ -33,35 +14,7 @@ struct ContentView: View {
 
             Divider()
 
-            ScheduleSectionView(
-                state: store.state,
-                showImsak: $showImsak,
-                language: appLanguage
-            )
-
-            Divider()
-
-            LanguageSectionView(appLanguageRaw: $appLanguageRaw)
-
-            Divider()
-
-            MenuBarStyleSection(
-                iconStyleRaw: $iconStyleRaw,
-                customStatusLabel: $customStatusLabel,
-                language: appLanguage
-            )
-
-            Divider()
-
-            LocationSettingsSection(
-                useManualLocation: $useManualLocation,
-                manualLatitude: $manualLatitude,
-                manualLongitude: $manualLongitude,
-                calculationMethod: $calculationMethod,
-                latitudeAdjustmentMethod: $latitudeAdjustmentMethod,
-                asrSchool: $asrSchool,
-                language: appLanguage
-            )
+            ScheduleSectionView(state: store.state, language: appLanguage)
 
             Divider()
 
@@ -80,31 +33,6 @@ struct ContentView: View {
         .onAppear {
             store.start()
         }
-        .onChange(of: useManualLocation) { _ in
-            refreshFromSettings()
-        }
-        .onChange(of: manualLatitude) { _ in
-            refreshFromSettings()
-        }
-        .onChange(of: manualLongitude) { _ in
-            refreshFromSettings()
-        }
-        .onChange(of: calculationMethod) { _ in
-            refreshFromSettings()
-        }
-        .onChange(of: latitudeAdjustmentMethod) { _ in
-            refreshFromSettings()
-        }
-        .onChange(of: asrSchool) { _ in
-            refreshFromSettings()
-        }
-        .onChange(of: showImsak) { _ in
-            store.timelineVisibilityChanged()
-        }
-    }
-
-    private func refreshFromSettings() {
-        store.refresh(force: true, debounce: settingsRefreshDebounce)
     }
 }
 

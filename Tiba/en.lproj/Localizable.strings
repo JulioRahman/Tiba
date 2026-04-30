@@ -85,6 +85,10 @@
 "settings.quit" = "Quit";
 "settings.refresh" = "Refresh";
 "settings.showImsak" = "Show Imsak";
+"settings.tab.general" = "General";
+"settings.tab.appearance" = "Appearance";
+"settings.tab.location" = "Location";
+"settings.openSettings" = "Settings…";
 "status.detectingLocation" = "Detecting location";
 "status.error" = "Error";
 "status.loadingPrayerTimes" = "Loading prayer times";
