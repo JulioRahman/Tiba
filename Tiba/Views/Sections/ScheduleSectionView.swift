@@ -8,28 +8,21 @@ struct ScheduleSectionView: View {
         if case .ready(let snapshot) = state {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(snapshot.events) { event in
-                    HStack {
-                        Label(
-                            event.prayer.displayName(language: language),
-                            systemImage: event.prayer.symbolName
-                        )
-                        .foregroundStyle(
-                            event.prayer == snapshot.nextEvent.prayer ? .primary : .secondary
-                        )
+                    let isNextPrayer = event.prayer == snapshot.nextEvent.prayer
 
-                        Spacer()
+                    HStack {
+                        Image(systemName: event.prayer.symbolName)
+                            .frame(width: 24, alignment: .center)
+
+                        Text(event.prayer.displayName(language: language))
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
                         Text(event.date, format: .dateTime.hour().minute())
                             .monospacedDigit()
-                            .foregroundStyle(
-                                event.prayer == snapshot.nextEvent.prayer
-                                    ? .primary : .secondary
-                            )
+                            .frame(width: 48, alignment: .trailing)
                     }
-                    .font(
-                        event.prayer == snapshot.nextEvent.prayer
-                            ? .body.weight(.semibold) : .body
-                    )
+                    .font(isNextPrayer ? .body.weight(.semibold) : .body)
+                    .foregroundStyle(isNextPrayer ? .primary : .secondary)
                 }
             }
         }
